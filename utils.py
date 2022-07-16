@@ -1,5 +1,7 @@
 from exceptions import RequestError
 import os
+import re
+
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(BASE_DIR, "data")
@@ -27,6 +29,8 @@ def get_query(data, cmd, value):
         return sort(data, value)
     elif cmd == 'limit':
         return limit(data, value)
+    elif cmd == 'regex':
+        return regex(data, value)
     else:
         raise RequestError('Проверьте правильность введенного запроса')
 
@@ -63,5 +67,19 @@ def limit(data, value):
     for i in range(int(value)):
         try:
             yield next(gen)
+        except StopIteration:
+            break
+
+
+def regex(data, value):
+    """Функция обработки регулярных выражений"""
+    value = value.replace(' ', '+')
+    reg = re.compile(value)
+    gen = iter(data)
+    while True:
+        try:
+            line = next(gen)
+            for _ in re.findall(reg, line):
+                yield line
         except StopIteration:
             break
