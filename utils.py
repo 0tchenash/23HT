@@ -7,7 +7,7 @@ DATA_DIR = os.path.join(BASE_DIR, "data")
 
 def read(filename):
     """Чтение данных из файла"""
-    with open(f'{DATA_DIR}\{filename}', 'r') as file:
+    with open(f'{DATA_DIR}/{filename}', 'r') as file:
         while True:
             try:
                 yield next(file).strip()
