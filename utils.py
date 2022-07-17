@@ -1,4 +1,5 @@
 from exceptions import RequestError
+from typing import Iterable, List, Union
 import os
 import re
 
@@ -7,7 +8,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(BASE_DIR, "data")
 
 
-def read(filename):
+def read(filename: str) -> Iterable:
     """Чтение данных из файла"""
     with open(f'{DATA_DIR}/{filename}', 'r') as file:
         while True:
@@ -17,7 +18,7 @@ def read(filename):
                 break
 
 
-def get_query(data, cmd, value):
+def get_query(data: Iterable, cmd: str, value: str) -> Union[Iterable, set, List[str]]:
     """Составление запроса"""
     if cmd == 'filter':
         return filter_(data, value)
@@ -35,12 +36,12 @@ def get_query(data, cmd, value):
         raise RequestError('Проверьте правильность введенного запроса')
 
 
-def filter_(data, value):
+def filter_(data: Iterable, value: str) -> Iterable:
     """Функция фильтрации данных по заданному значению"""
     return filter(lambda row: value in row, data)
 
 
-def map_(data, value):
+def map_(data: Iterable, value: str) -> Iterable:
     """Функция разделения исходных данных на колонки"""
     try:
         i = int(value)
@@ -49,19 +50,19 @@ def map_(data, value):
         raise RequestError('Проверьте правильность введенного аргумента')
 
 
-def unique(data):
+def unique(data: Iterable) -> set:
     """Функция, возвращающая только уникальные значения"""
     return set([row for row in data])
 
 
-def sort(data, value):
+def sort(data: Iterable, value: str) -> List[str]:
     """Функция сортировки данных в указанном порядке"""
     if value not in ('asc', 'desc'):
         raise RequestError('Проверьте правильность введенного аргумента')
     return sorted([i for i in data], reverse=False if value == 'asc' else True)
 
 
-def limit(data, value):
+def limit(data: Iterable, value: str) -> Iterable:
     """Функция, возвращающая заданное количество записей"""
     gen = iter(data)
     for i in range(int(value)):
@@ -71,10 +72,10 @@ def limit(data, value):
             break
 
 
-def regex(data, value):
+def regex(data: Iterable, value: str) -> Iterable:
     """Функция обработки регулярных выражений"""
-    value = value.replace(' ', '+')
-    reg = re.compile(value)
+    values = value.replace(' ', '+')
+    reg = re.compile(values)
     gen = iter(data)
     while True:
         try:
